@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import './App.css'
 import axios from 'axios'
-import { User } from '../../server/src/models/users'
+import { NewUser, User } from '../../server/src/models/users'
 
 function App(): JSX.Element {
   const [users, setUsers] = useState<User[]>([]);
+  const [name, setName] = useState<string>();
+  const [age, setAge] = useState<number>()
 
   const hasUsers = users !== undefined;
 
@@ -21,8 +23,39 @@ function App(): JSX.Element {
     getData();
   }, [])
 
+  //should response be called something else?
+  const postData = useCallback(async (name: string, age: number) => {
+    const newUser: NewUser = {
+      name,
+      age,
+    };
+    try {
+      await axios.post<NewUser[]>('http://localhost:3000/create-user', newUser);
+      await getData();
+    } catch (err) {
+      console.error(err);
+    }
+  }, [])
+
+
+  const Submit = () => {
+    //name and age are both required
+    if (name && age) {
+      postData(name, age);
+    }
+  }
+
+  const onChangedName = useCallback((value: string) => {
+    setName(value);
+  }, [])
+
+  const onChangedAge = useCallback((value: string) => {
+    setAge(parseInt(value));
+  }, []);
+
   return (
-    <div>
+    <div className='center'>
+      <h2>First MERN(MongoDB, Express, React, NodeJS) App </h2>
       {
         hasUsers ? users.map((user) => (
             //return
@@ -34,6 +67,10 @@ function App(): JSX.Element {
           )
         ) : null
       }
+      <p />
+      <input type="text" onChange={(e) => onChangedName(e.currentTarget.value)} />
+      <input type="text" onChange={(e) => onChangedAge(e.currentTarget.value)} />
+      <button onClick={Submit}> Create User</button>
     </div>
   )
 }

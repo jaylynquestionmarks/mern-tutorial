@@ -17,4 +17,6 @@ export interface User {
     age: number
 }
 
+export type NewUser = Omit<User, "_id">;
+
 export const UserModel = mongoose.model("users", UserSchema);

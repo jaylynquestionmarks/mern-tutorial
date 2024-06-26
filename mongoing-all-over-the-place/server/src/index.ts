@@ -5,16 +5,16 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import { UserModel } from './models/users';
 
-const appHttpServer = express()
-appHttpServer.use(cors())
-appHttpServer.use(express.json());
+const app = express()
+app.use(cors())
+app.use(express.json());
 
 //have to specify path in url
 mongoose.connect(
     'mongodb+srv://jaylynwong30:MuNBXpm5kDWrlvPf@cluster0.ngbh0m0.mongodb.net/mern'
 );
  
-appHttpServer.get("/get-users", async (req, res) => {
+app.get("/get-users", async (req, res) => {
     console.log('/get-users called');
     try {
         const users = await UserModel.find();
@@ -30,15 +30,16 @@ appHttpServer.get("/get-users", async (req, res) => {
     }
 })
 
-appHttpServer.post('/create-user', async (req, res) => {
+app.post('/create-user', async (req, res) => {
     const user = req.body;
+    console.log('/create-user request body', user);
     const newUser = new UserModel(user);
     await newUser.save();
     res.json(user);
 })
 
 const PORT = process.env.PORT || 3000;
-appHttpServer.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
