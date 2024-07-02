@@ -3,7 +3,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import { UserModel } from './models/users';
+import { EventModel } from './models/events';
 
 const app = express()
 app.use(cors())
@@ -14,28 +14,28 @@ mongoose.connect(
     'mongodb+srv://jaylynwong30:MuNBXpm5kDWrlvPf@cluster0.ngbh0m0.mongodb.net/mern'
 );
  
-app.get("/get-users", async (req, res) => {
-    console.log('/get-users called');
+app.get("/get-events", async (req, res) => {
+    console.log('/get-eventss called');
     try {
-        const users = await UserModel.find();
-        if (users.length > 0) {
-            console.log('Mongoing all over the place', users);
+        const events = await EventModel.find();
+        if (events.length > 0) {
+            console.log('Mongoing all over the place', events);
         } else {
-            console.log('no users found');
+            console.log('no events found');
         }
-        res.json(users);
+        res.json(events);
     } catch (err) {
         console.error(err);
         res.json(err);
     }
 })
 
-app.post('/create-user', async (req, res) => {
-    const user = req.body;
-    console.log('/create-user request body', user);
-    const newUser = new UserModel(user);
-    await newUser.save();
-    res.json(user);
+app.post('/create-event', async (req, res) => {
+    const event = req.body;
+    console.log('/create-event request body', event);
+    const newEvent = new EventModel(event);
+    await newEvent.save();
+    res.json(event);
 })
 
 const PORT = process.env.PORT || 3000;

@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
 import './App.css'
 import axios from 'axios'
-import { NewUser, User } from '../../server/src/models/users'
+import { NewEvent, Event } from '../../server/src/models/events'
 
 function App(): JSX.Element {
-  const [users, setUsers] = useState<User[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [name, setName] = useState<string>();
-  const [age, setAge] = useState<number>()
+  const [day, setDay] = useState<Date>();
 
-  const hasUsers = users !== undefined;
+  const hasEvents = events !== undefined;
 
   const getData = useCallback(async () => {
     try {
-      const response = await axios.get<User[]>('http://localhost:3000/get-users');
-      setUsers(response.data);
+      const response = await axios.get<Event[]>('http://localhost:3000/get-events');
+      setEvents(response.data);
     } catch (err) {
       console.error(err);
     }
@@ -24,13 +24,13 @@ function App(): JSX.Element {
   }, [])
 
   //should response be called something else?
-  const postData = useCallback(async (name: string, age: number) => {
-    const newUser: NewUser = {
+  const postData = useCallback(async (name: string, day: string) => {
+    const newEvent: NewEvent = {
       name,
-      age,
+      day,
     };
     try {
-      await axios.post<NewUser[]>('http://localhost:3000/create-user', newUser);
+      await axios.post<NewEvent[]>('http://localhost:3000/create-event', newEvent);
       await getData();
     } catch (err) {
       console.error(err);
@@ -40,28 +40,31 @@ function App(): JSX.Element {
 
   const Submit = () => {
     //name and age are both required
-    if (name && age) {
-      postData(name, age);
+    if (name && day) {
+      postData(name, day.toString());
     }
   }
 
   const onChangedName = useCallback((value: string) => {
     setName(value);
   }, [])
-
-  const onChangedAge = useCallback((value: string) => {
-    setAge(parseInt(value));
+  
+  const onChangedDay = useCallback((value: string) => {
+    parseInt(value);
+    //need to change to user input
+    const formatedDate = new Date(2013, 3, 14);
+    setDay((formatedDate));
   }, []);
 
   return (
     <div className='center'>
       <h2>First MERN(MongoDB, Express, React, NodeJS) App </h2>
       {
-        hasUsers ? users.map((user) => (
+        hasEvents ? events.map((event) => (
             //return
-            <div key={user._id}>
-              <h3>Name: {user.name} </h3>
-              <h3>Age: {user.age} </h3>
+            <div key={event._id}>
+              <h3>Event Name: {event.name} </h3>
+              <h3>Date: {event.day} </h3>
               <p>-----</p>
             </div>
           )
@@ -69,8 +72,8 @@ function App(): JSX.Element {
       }
       <p />
       <input type="text" onChange={(e) => onChangedName(e.currentTarget.value)} />
-      <input type="text" onChange={(e) => onChangedAge(e.currentTarget.value)} />
-      <button onClick={Submit}> Create User</button>
+      <input type="text" onChange={(e) => onChangedDay(e.currentTarget.value)} />
+      <button onClick={Submit}> Create Event</button>
     </div>
   )
 }
